@@ -50,7 +50,7 @@ export default {
   methods: {
     searchApi: function() {
       this.$store.commit("loading", true);
-      let baseurl = "http://pixabay.com/api/?key=";
+      let baseurl = "https://pixabay.com/api/?key=";
       let searchterm = "&q=" + this.$refs.searchterm.value;
       let safesearch = "&safesearch=true";
       let min_width = "&min_width=200px";
