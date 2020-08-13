@@ -1,20 +1,18 @@
 <template>
   <div id="app">
-    <appheader />
-    <Loader v-if="this.$store.getters.loading" />
-    <appbody />
-    <appfooter />
+    <AppHeader />
+    <AppBody />
+    <AppFooter />
   </div>
 </template>
 
 <script>
-import Loader from "./components/Loader";
-import appheader from "./components/app-header";
-import appbody from "./components/app-body";
-import appfooter from "./components/app-footer";
+import AppHeader from "./components/AppHeader";
+import AppBody from "./components/AppBody";
+import AppFooter from "./components/AppFooter";
 export default {
   name: "App",
-  components: { Loader, appheader, appbody, appfooter }
+  components: { AppHeader, AppBody, AppFooter },
 };
 </script>
 

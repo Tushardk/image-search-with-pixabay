@@ -1,71 +1,67 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import axios from "axios"
 
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
     state: {
-        loading: false,
-        previewloading: false,
-        results: null,
-        currentpreview: "",
-        currentpreviewindex: 0
+        searchResult: [],
+        searchLoader: false,
+        previewLoader: false,
+        previewImageUrl: "",
+        previewImageUrlIndex: 0
     },
     getters: {
-        results: state => state.results,
-        loading: state => state.loading,
-        previewloading: state => state.previewloading,
-        currentpreview: state => state.currentpreview,
-        currentpreviewindex: state => state.currentpreviewindex
+        searchResult: state => state.searchResult,
+        searchLoader: state => state.searchLoader,
+        previewLoader: state => state.previewLoader,
+        previewImageUrl: state => state.previewImageUrl,
+        previewImageUrlIndex: state => state.previewImageUrlIndex
     },
     mutations: {
-        captureResult(state, payload) {
-            state.results = payload
+        clearSearchResult(state, payload) {
+            state.searchResult = payload.data.hits;
         },
-        loading(state, payload) {
-            state.loading = payload
+        searchResult(state, payload) {
+            state.searchResult = payload.data.hits;
         },
-        previewloading(state, payload) {
-            state.previewloading = payload
+        searchLoader(state, payload) {
+            state.searchLoader = payload
         },
-        currentpreview(state, payload) {
-            // console.log(payload)
-            if (payload[1] === "first" || payload[1] === "direct") {
-                state.currentpreviewindex = payload[0]
-                state.currentpreview = state.results.data.hits[state.currentpreviewindex]["largeImageURL"]
-            }
-            else {
-                if ((payload[0] >= 0 && payload[1] === "prev") || (payload[0] < 20 && payload[1] === "next")) {
-                    state.currentpreviewindex = payload[0]
-                    state.currentpreview = state.results.data.hits[state.currentpreviewindex]["largeImageURL"]
-                } else {
-                    if (payload[1] === "prev") {
-                        console.log("No Prev")
-                    } else {
-                        console.log("No Next")
-                    }
-                }
-            }
+        previewLoader(state, payload) {
+            state.previewLoader = payload
         },
-        firstpreview(state, currentpreviewindex) {
-            this.commit("currentpreview", [currentpreviewindex, 'first'])
+        previewImageUrl(state, payload) {
+            state.previewImageUrl = payload
+        },
+        previewImageUrlIndex(state, payload) {
+            state.previewImageUrlIndex = payload
+            state.previewImageUrl = state.searchResult[payload].largeImageURL;
         }
     },
     actions: {
-        captureResult(context, payload) {
-            context.commit('captureResult', payload)
+        searchResult(context, payload) {
+            context.commit("searchLoader", true);
+            axios
+                .get(payload)
+                .then((data) => {
+                    if (data.data.total > 0) {
+                        context.commit('searchResult', data);
+                        context.commit('previewImageUrlIndex', 0);
+                    } else {
+                        context.commit('clearSearchResult', data)
+                    }
+                })
+                .catch((err) => console.log(err))
+                .finally(() => {
+                    context.commit("searchLoader", false);
+                });
+
         },
-        loading(context, payload) {
-            context.commit('loading', payload)
-        },
-        previewloading(context, payload) {
-            context.commit('previewloading', payload)
-        },
-        currentpreview(context, payload) {
-            context.commit('currentpreview', payload)
-        },
-        firstpreview(context, currentpreviewindex) {
-            context.commit('firstpreview', currentpreviewindex)
+        previewImageUrlIndex(context, payload) {
+            context.commit("previewLoader", true);
+            context.commit('previewImageUrlIndex', payload);
         }
     }
 })

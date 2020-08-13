@@ -2,75 +2,62 @@
   <div id="preview">
     <span id="prev" @click="prev">&lt;</span>
     <div id="preview-image">
-      <img
-        src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
-        alt
-        ref="preview"
-      />
+      <img :src="this.previewImageUrl" ref="imgTag" />
     </div>
     <span id="next" @click="next">&gt;</span>
-    <div id="preview-loader" v-if="previewloading">
-      <div id="loader">
-        <div class="lds-hourglass"></div>
-      </div>
+    <div id="preview-loader" v-if="this.previewLoader">
+      <div class="lds-hourglass"></div>
     </div>
   </div>
 </template>
 
 <script>
-import loadpreview from "../mixins/loadpreview";
 export default {
-  name: "preview",
+  name: "Preview",
   data() {
     return {};
   },
-  mixins: [loadpreview],
+  mounted() {
+    this.$refs.imgTag.addEventListener("load", () =>
+      this.$store.commit("previewLoader", false)
+    );
+  },
   computed: {
-    currentpreview() {
-      return this.$store.getters.currentpreview;
+    previewImageUrl() {
+      return this.$store.getters.previewImageUrl;
     },
-    currentpreviewindex() {
-      return this.$store.getters.currentpreviewindex;
+    previewImageUrlIndex() {
+      return this.$store.getters.previewImageUrlIndex;
     },
-    previewloading() {
-      return this.$store.getters.previewloading;
-    }
+    previewLoader() {
+      return this.$store.getters.previewLoader;
+    },
   },
   methods: {
-    prev: function() {
-      this.$store.dispatch("currentpreview", [
-        this.currentpreviewindex - 1,
-        "prev"
-      ]);
+    prev: function () {
+      if (this.previewImageUrlIndex - 1 > -1) {
+        this.$store.dispatch(
+          "previewImageUrlIndex",
+          this.previewImageUrlIndex - 1
+        );
+      } else {
+        console.log("No Previous");
+      }
     },
-    next: function() {
-      this.$store.dispatch("currentpreview", [
-        this.currentpreviewindex + 1,
-        "next"
-      ]);
-    }
+    next: function () {
+      if (this.previewImageUrlIndex + 1 < 20) {
+        this.$store.dispatch(
+          "previewImageUrlIndex",
+          this.previewImageUrlIndex + 1
+        );
+      } else {
+        console.log("No Next");
+      }
+    },
   },
-  watch: {
-    currentpreview() {
-      let self = this;
-      this.$store.dispatch("previewloading", true);
-      this.$refs.preview.src = this.currentpreview;
-      this.$refs.preview.onload = function() {
-        self.$store.dispatch("previewloading", false);
-      };
-    }
-  }
 };
 </script>
 <style scoped>
-#app-body {
-  display: flex;
-}
-
-#search-result {
-  flex: 3;
-}
-
 #preview {
   flex: 7;
   display: flex;
@@ -98,6 +85,9 @@ export default {
   position: relative;
   width: 80px;
   height: 80px;
+  background-color: darkseagreen;
+  border-radius: 10em;
+  padding: 24px;
 }
 #preview-loader {
   position: absolute;
@@ -117,8 +107,8 @@ export default {
   height: 0;
   margin: 8px;
   box-sizing: border-box;
-  border: 32px solid #fff;
-  border-color: #fff transparent #fff transparent;
+  border: 32px solid #333;
+  border-color: #333 transparent #333 transparent;
   animation: lds-hourglass 1.2s infinite;
 }
 @keyframes lds-hourglass {

@@ -13,18 +13,16 @@ export default {};
 <style scoped>
 #loaderCont {
   position: absolute;
-  top: 25vh;
-  left: 25vw;
-  width: 50vw;
-  height: 50vh;
+  top: 118px;
+  left: 210px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 2em;
-  opacity: 0.5;
-  border-radius: 50px;
-  background: #333;
-  box-shadow: 20px 20px 60px #008484, -20px -20px 60px #00b2b2;
+  z-index: 1;
+  background-color: darkseagreen;
+  border-radius: 10em;
+  padding: 24px;
 }
 
 .lds-hourglass {
@@ -41,8 +39,8 @@ export default {};
   height: 0;
   margin: 8px;
   box-sizing: border-box;
-  border: 32px solid #fff;
-  border-color: #fff transparent #fff transparent;
+  border: 32px solid #333;
+  border-color: #333 transparent #333 transparent;
   animation: lds-hourglass 1.2s infinite;
 }
 @keyframes lds-hourglass {

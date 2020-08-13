@@ -1,19 +1,19 @@
 <template>
   <div id="app-body">
-      <searchbar />
-      <preview />
+      <SearchBar />
+      <Preview />
   </div>
 </template>
 
 <script>
-import searchbar from "./search-bar";
-import preview from "./preview";
+import SearchBar from "./SearchBar";
+import Preview from "./Preview";
 
 export default {
-  name: "app-body",
+  name: "AppBody",
   components: {
-    searchbar,
-    preview
+    SearchBar,
+    Preview
   },
   methods: {
 
