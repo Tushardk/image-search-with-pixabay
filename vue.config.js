@@ -1,10 +1,10 @@
 // vue.config.js
 module.exports = {
-  outputDir:'docs',
+  outputDir: 'docs',
   publicPath: process.env.NODE_ENV === 'production'
-  ? '/profile/'
-  : '/',
-  filenameHashing : false,
+    ? '/image-search-with-pixabay/'
+    : '/',
+  filenameHashing: false,
 
   chainWebpack: (config) => {
     config
