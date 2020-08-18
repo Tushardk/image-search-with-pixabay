@@ -13,6 +13,10 @@ import AppFooter from "./components/AppFooter";
 export default {
   name: "App",
   components: { AppHeader, AppBody, AppFooter },
+  created() {
+    console.log(this);
+    console.log(this.$root);
+  },
 };
 </script>
 

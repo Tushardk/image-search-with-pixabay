@@ -1,7 +1,7 @@
 <template>
   <div id="app-body">
-      <SearchBar />
-      <Preview />
+    <SearchBar />
+    <Preview />
   </div>
 </template>
 
@@ -11,42 +11,28 @@ import Preview from "./Preview";
 
 export default {
   name: "AppBody",
+  data() {
+    return {
+      a: 1,
+    };
+  },
   components: {
     SearchBar,
-    Preview
+    Preview,
   },
-  methods: {
-
-  }
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
 #app-body {
   display: flex;
   padding: 20px;
-}
 
-#search-result {
-  flex: 3;
-}
+  .search-result {
+    flex: 3;
+  }
 
-#preview {
-  flex: 7;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-#preview #preview-image {
-  flex: 8;
-}
-#preview #preview-image img {
-  width: 500px;
-  height: 500px;
-}
-#preview #prev,
-#preview #next {
-  font-size: 100px;
-  cursor: pointer;
-  flex: 1;
+  .preview {
+    flex: 7;
+  }
 }
 </style>

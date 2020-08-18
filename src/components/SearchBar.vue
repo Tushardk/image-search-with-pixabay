@@ -1,13 +1,13 @@
 <template>
-  <div id="search-result">
+  <div class="search-result">
     <div id="search">
-      <input type="text" id="search-bar" ref="searchterm" value="trains" @keyup.enter="searchApi" />
+      <input type="text" id="search-bar" ref="searchterm" value="hills" @keyup.enter="searchApi" />
       <button id="search-button" @click="searchApi">Search</button>
     </div>
     <div id="result">
-      <template id="success" v-if="this.didFoundSearchResult">
+      <template id="success" v-if="this.didFoundResults">
         <div
-          v-for="(item,index) in this.searchResult"
+          v-for="(item,index) in this.searchResultDataHits"
           :key="item.id"
           class="thumbnail"
           :data-div-index="index+1"
@@ -15,44 +15,50 @@
           <img
             :src="item.previewURL"
             :data-img-index="index"
-            @click="setPreviewImageUrlIndex(index)"
+            @click="setPreviewImageUrlIndex(index, $event)"
           />
         </div>
       </template>
-      <div id="failure" v-else>No Result Found</div>
+      <div id="failure" v-else>No Result Found, Please try some appropriate search term...</div>
       <Loader v-if="this.searchLoader" />
     </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
 import Loader from "./Loader";
 export default {
   name: "SearchBar",
+  props: ["name"],
   components: {
     Loader,
   },
   data() {
     return {
       apikey: "15730940-7551094251995cb8e814b5f55",
+      searchLoader: false,
+      didFoundResults: false,
     };
   },
   mounted() {
-    this.searchApi();
+    (this.didFoundResults = true), this.searchApi();
+
+    this.$root.$on("addVisitedClass", (e) => {
+      let largeImageURL = e.path[0]["currentSrc"];
+      for (let result in this.searchResultDataHits) {
+        if (
+          this.searchResultDataHits[result]["largeImageURL"] === largeImageURL
+        ) {
+          let imgElm = document.querySelector(`[data-img-index="${result}"]`);
+          imgElm.classList.add("visited");
+        }
+      }
+    });
   },
   computed: {
-    didFoundSearchResult() {
-      if (this.$store.getters.searchResult.length === 0) {
-        return false;
-      } else {
-        return true;
-      }
-    },
-    searchResult() {
-      return this.$store.getters.searchResult;
-    },
-    searchLoader() {
-      return this.$store.getters.searchLoader;
+    searchResultDataHits() {
+      return this.$store.getters.searchResultData.hits;
     },
   },
 
@@ -71,16 +77,41 @@ export default {
         min_height +
         safesearch;
 
-      this.$store.dispatch("searchResult", searchUrl);
+      this.searchResult(searchUrl);
     },
-    setPreviewImageUrlIndex: function (index) {
-      this.$store.dispatch("previewImageUrlIndex", index);
+    searchResult: function (searchUrl) {
+      this.searchLoader = true;
+      axios
+        .get(searchUrl)
+        .then((data) => {
+          if (data.data.total > 0) {
+            this.didFoundResults = true;
+            this.$store.dispatch("searchResultData", data.data);
+            this.$root.$emit("previewImageIndex", 0, false);
+          } else {
+            this.didFoundResults = false;
+            this.$store.dispatch("clearsearchResultData", data.data);
+          }
+        })
+        .catch((err) => console.log(err))
+        .finally(() => {
+          this.searchLoader = false;
+        });
+    },
+    setPreviewImageUrlIndex: function (index, event) {
+      let classes = Array.from(event.target.classList);
+      let isVisitedThumbnail =
+        classes.indexOf("visited") === -1
+          ? event.target.classList.add("visited")
+          : true;
+
+      this.$root.$emit("previewImageIndex", index, isVisitedThumbnail);
     },
   },
 };
 </script>
 <style lang="scss" scoped>
-#search-result {
+.search-result {
   #search {
     #search-bar {
       padding: 4px;
@@ -132,6 +163,12 @@ export default {
       max-height: 80px;
       display: inline-block;
       overflow: hidden;
+    }
+    #failure {
+      font-size: 24px;
+      padding: 40px 60px;
+      line-height: 150%;
+      color: brown;
     }
     div img {
       width: 80px;
