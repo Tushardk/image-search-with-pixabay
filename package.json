@@ -10,6 +10,7 @@
   "dependencies": {
     "axios": "^0.19.2",
     "core-js": "^3.6.5",
+    "npm-force-resolutions": "0.0.3",
     "vue": "^2.6.11",
     "vuex": "^3.5.1"
   },
@@ -41,5 +42,8 @@
   "browserslist": [
     "> 1%",
     "last 2 versions"
-  ]
+  ],
+  "resolutions": {
+    "serialize-javascript": "3.1.0"
+  }
 }
